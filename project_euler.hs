@@ -15,4 +15,30 @@ s = sum $ takeWhile (<4000000) $ filter even fibs
 fib ::  Int -> Integer
 fib x = fibs !! x
 
+-- problem 3: prime factors of n
+-- let's do it the dumb way, at least to start
+isFactor :: (Integral a) => a -> a -> Bool
+isFactor n i
+    | n `mod` i == 0 = True
+    | otherwise      = False
 
+findFactors' :: (Integral a) => a -> a -> [a]
+findFactors' n i
+    | n <= 1    = [] -- ignore 0 and negatives for now
+    | otherwise = [x] ++ (findFactors' (round ( toRational n / toRational x )) x)
+       where x = head $ filter (\i -> isFactor n i) [i..n]
+
+findFactors :: (Integral a) => a -> [a]
+findFactors n = findFactors' n 2
+
+-- problem 4: palindromic numbers
+-- 
+testPalindrome :: (Eq a) => [a] -> Bool
+testPalindrome n
+    | length n <= 1 = True
+    | head n == last n && (testPalindrome $ tail $ init n) = True
+    | otherwise        = False
+
+-- this is slow-ish...
+euler4 :: (Integral a, Show a) => a -> a
+euler4 n = maximum $ filter (testPalindrome . show) [i*j | i <- [n,n-1..2], j <- [i, i-1..2]]
